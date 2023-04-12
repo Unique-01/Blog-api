@@ -1,4 +1,4 @@
 .vscode
 .env
 *.pyc
-db.sqlite3
+.sqlite3
