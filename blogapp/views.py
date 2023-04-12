@@ -7,6 +7,8 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
+from .permissions import IsAuthorOrReadOnly
+from django.contrib.auth.models import User
 
 # Create your views here.
 @api_view(['GET'])
@@ -24,7 +26,8 @@ class UserList(generics.ListAPIView):
     serializer_class = UserSerializer
 
 class UserDetail(generics.RetrieveAPIView):
-    serializer_class=UserSerializer
+    queryset = User.objects.all()
+    serializer_class= UserSerializer
 
 class PostList(generics.ListCreateAPIView):
     queryset = Post.objects.all()
@@ -37,6 +40,7 @@ class PostList(generics.ListCreateAPIView):
 class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly,IsAuthorOrReadOnly]
     
 
 
