@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Post
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model,authenticate
 
 
 
@@ -13,6 +14,9 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     posts = PostSerializer(many=True,read_only=True)
+    password = serializers.CharField(write_only=True)
     class Meta:
         model = User
-        fields = ['url','id','username','posts']
+        fields = ['url','id','username','posts','password']
+
+
