@@ -11,6 +11,8 @@ urlpatterns = [
     path('signup/', views.SignUp.as_view(), name='signup'),
     path('login/',views.LoginView.as_view(),name='login'),
     path('logout/',views.LogoutView.as_view(),name='logout'),
+    path('comments/',views.CommentList.as_view(),name='comment-list'),
+    path('comments/<int:pk>/',views.CommentDetail.as_view(),name='comment-detail'),
     # path('get-csrf-token/',views.get_csrf_token,name='get-csrf-token'),
     
 ]

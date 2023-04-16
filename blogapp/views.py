@@ -1,8 +1,7 @@
-from django.shortcuts import render
 from rest_framework.response import Response
-from .models import Post
+from .models import Post,Comment
 from django.contrib.auth.models import User
-from .serializers import PostSerializer,UserSerializer
+from .serializers import PostSerializer,UserSerializer,CommentSerializer
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly,AllowAny
 from rest_framework.decorators import api_view
@@ -12,10 +11,6 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import login, logout,authenticate
-from django.middleware.csrf import get_token
-from django.views.decorators.csrf import csrf_protect
-from django.utils.decorators import method_decorator
-from django.http import JsonResponse
 
 
 
@@ -25,7 +20,8 @@ def api_root(request,format=None):
     return Response (
         {
             "users":reverse("user-list",request=request,format=format),
-            "posts":reverse("post-list",request=request,format=format)
+            "posts":reverse("post-list",request=request,format=format),
+            "comments":reverse("comment-list",request=request,format=format)
         }
     )
 
@@ -55,9 +51,6 @@ class LoginView(APIView):
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 class LogoutView(APIView):
-    """
-    Logout view for DRF authentication.
-    """
     def post(self, request):
         logout(request)
         return Response({'message': 'Logged out successfully.'}, status=status.HTTP_200_OK)
@@ -84,6 +77,19 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly,IsAuthorOrReadOnly]
+
+class CommentList(generics.ListCreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly,IsAuthorOrReadOnly]
+
     
 
 
